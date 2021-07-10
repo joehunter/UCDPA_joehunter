@@ -6,13 +6,13 @@ import zipfile
 import glob
 
 
-def use_local_copy_of_house_price_data():
+def use_local_copy_of_data():
     """
     Reads a CSV file stored in local folder called 'Data\local\' relative to the main code.
 
     Returns: DataFrame
     """
-    return pd.read_csv(".\Data\Local\Property_Price_Register_Ireland_2021-05-28.csv")
+    return pd.read_csv(".\Data\Local\Breast_Cancer_Wisconsin_Diagnostic_Data_Set_v2021-07-10.csv")
 
 
 def delete_all_files_from_this_folder(folder):
@@ -27,7 +27,7 @@ def delete_all_files_from_this_folder(folder):
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 
-def download_house_price_data_from_kaggle_api(this_path_name):
+def download_data_from_kaggle_api(this_path_name):
     from kaggle.api.kaggle_api_extended import KaggleApi
     api = KaggleApi()
     api.authenticate()
@@ -48,9 +48,9 @@ def unzip_this_zip_file(this_path_and_zip_file_name, extract_to):
         zipref.extractall(extract_to)
 
 
-def use_downloaded_copy_of_house_price_data():
+def use_downloaded_copy_of_data():
     path_name = './Data/From_api/'
-    path_and_zip_file_name = download_house_price_data_from_kaggle_api(path_name)
+    path_and_zip_file_name = download_data_from_kaggle_api(path_name)
     unzip_this_zip_file(path_and_zip_file_name, path_name)
     for name in glob.glob(path_name+'*.csv'):
         csv_file_name = name
@@ -61,10 +61,13 @@ choose_data = input("Press 1 to choose local data already downloaded OR press 2 
 
 if choose_data == 1:
     print('Using local data now...please wait')
-    df = use_local_copy_of_house_price_data()
+    df = use_local_copy_of_data()
 else:
     print('Downloading from Kaggle...please wait')
-    df = use_downloaded_copy_of_house_price_data()
+    df = use_downloaded_copy_of_data()
 
-print(df.head())
-print(df.describe())
+
+print(df.isnull().sum())
+print(df.isna().sum())
+# Get column data types and missing values in Columns
+#df.info()
