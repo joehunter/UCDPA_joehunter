@@ -32,8 +32,12 @@ def download_house_price_data_from_kaggle_api(this_path_name):
     api = KaggleApi()
     api.authenticate()
 
+    #https://www.kaggle.com/uciml/breast-cancer-wisconsin-data
+
     delete_all_files_from_this_folder(this_path_name)
-    api.dataset_download_files('erinkhoo/property-price-register-ireland',path=this_path_name)
+    #api.dataset_download_files('erinkhoo/property-price-register-ireland',path=this_path_name)
+    api.dataset_download_files('uciml/breast-cancer-wisconsin-data', path=this_path_name)
+
     for name in glob.glob(this_path_name + '*.zip'):
         dataset_zip_name = name
     return dataset_zip_name
