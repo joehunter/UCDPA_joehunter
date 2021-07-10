@@ -8,8 +8,7 @@ import glob
 
 def use_local_copy_of_house_price_data():
     """
-    Reads a CSV file stored in local folder called Data\local\ relative to
-    the main code.
+    Reads a CSV file stored in local folder called 'Data\local\' relative to the main code.
 
     Returns: DataFrame
     """
@@ -54,7 +53,7 @@ def use_downloaded_copy_of_house_price_data():
     return pd.read_csv(csv_file_name)
 
 
-choose_data = input("Press 1 to choose local downloaded data OR press 2 to download from Kaggle(needs an API)? ")
+choose_data = input("Press 1 to choose local data already downloaded OR press 2 to download latest data from Kaggle(requires an API Token)? ")
 
 if choose_data == 1:
     print('Using local data now...please wait')
@@ -63,4 +62,5 @@ else:
     print('Downloading from Kaggle...please wait')
     df = use_downloaded_copy_of_house_price_data()
 
-
+print(df.head())
+print(df.describe())
