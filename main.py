@@ -1,9 +1,11 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
-import os, shutil
+import os
+import shutil
 import zipfile
 import glob
+import discovery
 
 
 def use_local_copy_of_data():
@@ -32,7 +34,6 @@ def download_data_from_kaggle_api(this_path_name):
     api = KaggleApi()
     api.authenticate()
 
-
     delete_all_files_from_this_folder(this_path_name)
 
     api.dataset_download_files('anthonypino/melbourne-housing-market', path=this_path_name)
@@ -56,7 +57,8 @@ def use_downloaded_copy_of_data():
     return pd.read_csv(csv_file_name)
 
 
-choose_data = input("Press 1 to choose local data already downloaded OR press 2 to download latest data from Kaggle(requires an API Token)? ")
+choose_data = int(input("Press 1 to choose local data already downloaded OR press 2 to download latest data from Kaggle(requires an API Token)?"))
+
 
 if choose_data == 1:
     print('Using local data now...please wait')
@@ -65,8 +67,12 @@ else:
     print('Downloading from Kaggle...please wait')
     df = use_downloaded_copy_of_data()
 
+print()
+print()
+discovery.EDA(df)
 
-print(df.isnull().sum())
-print(df.isna().sum())
-# Get column data types and missing values in Columns
-#df.info()
+dups = df.duplicated()
+print(df[dups])
+
+
+
