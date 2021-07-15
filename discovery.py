@@ -1,13 +1,26 @@
 
 
 class EDA:
+
     def __init__(self, this_df):
         print(this_df.head())
         # Get the dimensions of the data
         print("These are the data set dimensions : {}".format(this_df.shape))
+
         print("Are there any NULLs? : {}".format(self.are_there_nulls(this_df)))
         print("Are there any NaN's? : {}".format(self.are_there_NaNs(this_df)))
-        print("Are there duplicate rows? : {}".format(self.are_there_duplicates(this_df)))
+        self.does_df_have_duplicates = self.are_there_duplicates(this_df)
+        print("Are there duplicate rows? : {}".format(self.does_df_have_duplicates))
+
+        if self.does_df_have_duplicates:
+            print("Going to remove duplicates now...")
+            self.drop_duplicates(this_df)
+            print("Any duplicates remain? : {}".format(self.are_there_duplicates(this_df)))
+
+
+
+        print("Date set dimensions now... : {}".format(this_df.shape))
+
 
     def are_there_nulls(self, this_df):
         return bool(this_df.isnull().sum().sum() > 0)
@@ -17,3 +30,7 @@ class EDA:
 
     def are_there_duplicates(self, this_df):
         return bool(this_df.duplicated().any())
+
+    def drop_duplicates(self, this_df):
+        list_cols_used_to_identify_duplicates = ["Address", "Date"]
+        return this_df.drop_duplicates(subset=list_cols_used_to_identify_duplicates, keep='first', inplace=True)

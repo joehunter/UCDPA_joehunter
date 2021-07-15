@@ -71,8 +71,6 @@ print()
 print()
 discovery.EDA(df)
 
-dups = df.duplicated()
-print(df[dups])
 
 
 
