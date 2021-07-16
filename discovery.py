@@ -32,5 +32,10 @@ class EDA:
         return bool(this_df.duplicated().any())
 
     def drop_duplicates(self, this_df):
+        pre_num_rows_in_df = len(this_df.index)
         list_cols_used_to_identify_duplicates = ["Address", "Date"]
-        return this_df.drop_duplicates(subset=list_cols_used_to_identify_duplicates, keep='first', inplace=True)
+        this_df.drop_duplicates(subset=list_cols_used_to_identify_duplicates, keep='first', inplace=True)
+        num_rows_deleted = pre_num_rows_in_df - len(this_df.index)
+        print("Dropped duplicate rows? : {}".format(num_rows_deleted))
+        return this_df
+
