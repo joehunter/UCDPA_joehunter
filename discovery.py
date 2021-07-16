@@ -4,11 +4,10 @@ class EDA:
 
     def __init__(self, this_df):
         print(this_df.head())
+
         # Get the dimensions of the data
         print("These are the data set dimensions : {}".format(this_df.shape))
 
-        print("Are there any NULLs? : {}".format(self.are_there_nulls(this_df)))
-        print("Are there any NaN's? : {}".format(self.are_there_NaNs(this_df)))
         self.does_df_have_duplicates = self.are_there_duplicates(this_df)
         print("Are there duplicate rows? : {}".format(self.does_df_have_duplicates))
 
@@ -17,7 +16,10 @@ class EDA:
             self.drop_duplicates(this_df)
             print("Any duplicates remain? : {}".format(self.are_there_duplicates(this_df)))
 
+        print("Are there any NULLs? : {}".format(self.are_there_nulls(this_df)))
+        self.drop_features_with_most_nulls(this_df)
 
+        print("Are there any NaN's? : {}".format(self.are_there_NaNs(this_df)))
 
         print("Date set dimensions now... : {}".format(this_df.shape))
 
@@ -39,3 +41,6 @@ class EDA:
         print("Dropped duplicate rows? : {}".format(num_rows_deleted))
         return this_df
 
+    def drop_features_with_most_nulls(self, this_df):
+        array_features = this_df.isnull().sum().sort_values(ascending=False).head(3).index.values
+        return this_df.drop(array_features, axis=1, inplace=True)
