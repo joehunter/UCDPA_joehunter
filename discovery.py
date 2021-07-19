@@ -21,6 +21,8 @@ class EDA:
 
         print("Are there any NaN's? : {}".format(self.are_there_NaNs(this_df)))
 
+        print("Are there empty? : {}".format(self.are_there_empty_rows(this_df)))
+
         print("Date set dimensions now... : {}".format(this_df.shape))
 
 
@@ -32,6 +34,9 @@ class EDA:
 
     def are_there_duplicates(self, this_df):
         return bool(this_df.duplicated().any())
+
+    def are_there_empty_rows(self, this_df):
+        return bool(this_df.isnull().all(axis=1).any())
 
     def drop_duplicates(self, this_df):
         pre_num_rows_in_df = len(this_df.index)

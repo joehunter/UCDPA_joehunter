@@ -72,5 +72,3 @@ print()
 discovery.EDA(df)
 
 
-
-
