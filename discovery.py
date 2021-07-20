@@ -1,51 +1,23 @@
 
-
 class EDA:
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import numpy as np
 
     def __init__(self, this_df):
-        print(this_df.head())
 
-        # Get the dimensions of the data
-        print("These are the data set dimensions : {}".format(this_df.shape))
+        self.correlation_heatmap(this_df)
 
-        self.does_df_have_duplicates = self.are_there_duplicates(this_df)
-        print("Are there duplicate rows? : {}".format(self.does_df_have_duplicates))
-
-        if self.does_df_have_duplicates:
-            print("Going to remove duplicates now...")
-            self.drop_duplicates(this_df)
-            print("Any duplicates remain? : {}".format(self.are_there_duplicates(this_df)))
-
-        print("Are there any NULLs? : {}".format(self.are_there_nulls(this_df)))
-        self.drop_features_with_most_nulls(this_df)
-
-        print("Are there any NaN's? : {}".format(self.are_there_NaNs(this_df)))
-
-        print("Are there empty? : {}".format(self.are_there_empty_rows(this_df)))
-
-        print("Date set dimensions now... : {}".format(this_df.shape))
-
-
-    def are_there_nulls(self, this_df):
-        return bool(this_df.isnull().sum().sum() > 0)
-
-    def are_there_NaNs(self, this_df):
-        return bool(this_df.isna().sum().sum() > 0)
-
-    def are_there_duplicates(self, this_df):
-        return bool(this_df.duplicated().any())
-
-    def are_there_empty_rows(self, this_df):
-        return bool(this_df.isnull().all(axis=1).any())
-
-    def drop_duplicates(self, this_df):
-        pre_num_rows_in_df = len(this_df.index)
-        list_cols_used_to_identify_duplicates = ["Address", "Date"]
-        this_df.drop_duplicates(subset=list_cols_used_to_identify_duplicates, keep='first', inplace=True)
-        num_rows_deleted = pre_num_rows_in_df - len(this_df.index)
-        print("Dropped duplicate rows? : {}".format(num_rows_deleted))
-        return this_df
-
-    def drop_features_with_most_nulls(self, this_df):
-        array_features = this_df.isnull().sum().sort_values(ascending=False).head(3).index.values
-        return this_df.drop(array_features, axis=1, inplace=True)
+    def correlation_heatmap(self, this_df):
+            # use the pands .corr() function to compute pairwise correlations for the dataframe
+            corr = this_df.corr()
+            # visualise the data with seaborn
+            mask = self.np.triu(self.np.ones_like(corr, dtype=self.np.bool))
+            self.sns.set_style(style='white')
+            f, ax = self.plt.subplots(figsize=(11, 9))
+            cmap = self.sns.diverging_palette(10, 250, as_cmap=True)
+            self.sns.heatmap(corr, mask=mask, cmap=cmap,
+                    square=True,
+                    linewidths=.5, cbar_kws={"shrink": .5}, ax=ax)
+            self.plt.savefig("Correlation_plot.png")
+            self.plt.show()

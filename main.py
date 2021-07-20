@@ -6,7 +6,10 @@ import shutil
 import zipfile
 import glob
 
+
+
 import cleaning
+import discovery
 
 
 def use_local_copy_of_data():
@@ -71,5 +74,7 @@ else:
 print()
 print()
 cleaning.CleanData(df)
+discovery.EDA(df)
+
 
 
