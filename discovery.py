@@ -19,5 +19,5 @@ class EDA:
             self.sns.heatmap(corr, mask=mask, cmap=cmap,
                     square=True,
                     linewidths=.5, cbar_kws={"shrink": .5}, ax=ax)
-            self.plt.savefig("Correlation_plot.png")
+            self.plt.savefig("./Output/Correlation_plot.png")
             self.plt.show()

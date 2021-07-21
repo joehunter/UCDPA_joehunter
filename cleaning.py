@@ -34,6 +34,11 @@ class CleanData:
         print("Drop rows with missing price values")
         this_df = self.drop_rows_with_no_price_values(this_df)
 
+        pre_num_rows_in_df = len(this_df.index)
+        this_df = this_df[this_df['Distance'].notnull()]
+        num_rows_deleted = pre_num_rows_in_df - len(this_df.index)
+        print(" ...Dropped number of rows with #N/A in Distance feature? : {}".format(num_rows_deleted))
+
         print("****************************************************************")
         print("Post-Clean Dataset Dimensions... : {}".format(this_df.shape))
         print("****************************************************************")

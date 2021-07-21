@@ -5,12 +5,12 @@ import os
 import shutil
 import zipfile
 import glob
-
+import numpy as np
 
 
 import cleaning
 import discovery
-
+import regression
 
 def use_local_copy_of_data():
     """
@@ -71,10 +71,19 @@ else:
     print('Downloading from Kaggle...please wait')
     df = use_downloaded_copy_of_data()
 
+
 print()
 print()
+
 cleaning.CleanData(df)
-discovery.EDA(df)
+#discovery.EDA(df)
+
+
+print("****************************************************************")
+print("Pre-regression analysis Dataset Dimensions... : {}".format(df.shape))
+print("****************************************************************")
+regression.Linear(df)
+
 
 
 
