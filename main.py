@@ -11,6 +11,8 @@ import numpy as np
 import cleaning
 import discovery
 import regression
+import regularization
+
 
 def use_local_copy_of_data():
     """
@@ -77,8 +79,8 @@ print()
 
 cleaning.CleanData(df)
 #discovery.EDA(df)
-regression.Linear(df)
-
+#regression.Linear(df)
+regularization.Lasso(df)
 
 
 
