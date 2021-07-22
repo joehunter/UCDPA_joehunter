@@ -77,11 +77,6 @@ print()
 
 cleaning.CleanData(df)
 #discovery.EDA(df)
-
-
-print("****************************************************************")
-print("Pre-regression analysis Dataset Dimensions... : {}".format(df.shape))
-print("****************************************************************")
 regression.Linear(df)
 
 
