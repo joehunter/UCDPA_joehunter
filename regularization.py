@@ -15,14 +15,27 @@ class Lasso:
 
         #https://campus.datacamp.com/courses/supervised-learning-with-scikit-learn/regression-2?ex=12
 
+        # Create arrays for features and target variable
+        y = this_df['Price']
+        X = this_df['Postcode']
+
+        # Print the dimensions of y and X before reshaping
+        print("Dimensions of y before reshaping: ", y.shape)
+        print("Dimensions of X before reshaping: ", X.shape)
+
+        # Reshape X and y
+        y_reshaped = y.values.reshape(-1, 1)
+        X_reshaped = X.values.reshape(-1, 1)
+
         # Instantiate a lasso regressor: lasso
         lasso = Lasso(alpha=0.4, normalize=True)
 
         # Fit the regressor to the data
-        lasso.fit(X_train, y_train)
+        lasso.fit(X_reshaped, y_reshaped)
 
         # Compute and print the coefficients
-        lasso_coef = lasso.fit(X_train, y_train).coef_
+        lasso_coef = lasso.fit(X_reshaped, y_reshaped).coef_
+        print('Lasso coefficient...')
         print(lasso_coef)
 
         # Plot the coefficients

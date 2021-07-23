@@ -2,21 +2,30 @@
 
 class Linear:
 
-    import pandas
-    import numpy as np
-    from sklearn import linear_model
-
     def __init__(self, this_df):
+        # https://campus.datacamp.com/courses/supervised-learning-with-scikit-learn/regression-2?ex=7
 
-        this_df = this_df.reset_index()
+        import numpy as np
+        from sklearn.linear_model import LinearRegression
+        from sklearn.metrics import mean_squared_error
+        from sklearn.model_selection import train_test_split
 
         X = this_df[['Distance', 'Rooms']]
         y = this_df[['Price']]
 
-        linear_regression = self.linear_model.LinearRegression()
-        linear_regression.fit(X, y)
+        # Create training and test sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state=42)
 
-        # predict the price where house is 10KM from CBD and number of rooms is 5
-        predicted_price = linear_regression.predict([[20, 3]])
+        # Create the regressor: reg_all
+        reg_all = LinearRegression()
 
-        print(predicted_price)
+        # Fit the regressor to the training data
+        reg_all.fit(X_train, y_train)
+
+        # Predict on the test data: y_pred
+        y_pred = reg_all.predict(X_test)
+
+        # Compute and print R^2 and RMSE
+        print("R^2: {}".format(reg_all.score(X_test, y_test)))
+        rmse = np.sqrt(mean_squared_error(y_test,y_pred))
+        print("Root Mean Squared Error: {}".format(rmse))
