@@ -12,22 +12,23 @@ class CleanData:
         print()
         print("****************************************************************")
         print("Pre-Clean Dataset Dimensions : {}".format(this_df.shape))
+        print("Pre-Clean Memory Usage : {}".format(this_df.memory_usage(deep=True).sum()))
         print("****************************************************************")
 
 
-        print("Are there any rows entirely EMPTY? : {}".format(self.are_there_empty_rows(this_df)))
+        print("EMPTY: Are there any rows entirely EMPTY? : {}".format(self.are_there_empty_rows(this_df)))
 
-        print("Are there any features entirely EMPTY? : {}".format(self.are_there_empty_features(this_df)))
+        print("EMPTY: Are there any features entirely EMPTY? : {}".format(self.are_there_empty_features(this_df)))
 
         self.does_df_have_duplicates = self.are_there_duplicates(this_df)
-        print("Are there duplicate rows (based on ['Address', 'Date'] features)? : {}".format(self.does_df_have_duplicates))
+        print("DUPLICATES: Are there duplicate rows (based on ['Address', 'Date'] features)? : {}".format(self.does_df_have_duplicates))
 
         if self.does_df_have_duplicates:
             print(" ...Going to remove duplicates now...")
             this_df = self.drop_duplicates(this_df)
             print(" ...Any duplicates remain? : {}".format(self.are_there_duplicates(this_df)))
 
-        print("Drop 4 features not required: ['Suburb', 'Address', 'SellerG', 'CouncilArea']")
+        print("DROP: 4 features not required: ['Suburb', 'Address', 'SellerG', 'CouncilArea']")
         self.drop_features(this_df)
 
         # self.does_df_have_NULLS = self.are_there_nulls(this_df)
@@ -39,7 +40,7 @@ class CleanData:
 
         list_check_for_NaNs = ['Type', 'Method', 'Regionname']
         self.does_df_have_NaNs = self.are_there_NaNs(this_df, list_check_for_NaNs)
-        print("Are there any NaNs? : {}".format(self.does_df_have_NaNs))
+        print("NANS: Are there any NaNs? : {}".format(self.does_df_have_NaNs))
 
         if self.does_df_have_NaNs:
             print(" ...Going to remove NaNs now...from this list ['Type', 'Method', 'Regionname']")
@@ -47,7 +48,8 @@ class CleanData:
             this_df = self.drop_rows_with_NaNs(this_df, list_check_for_NaNs)
             print(" ...NaNs Removed -> How many rows were dropped? : {}".format(pre_num_rows_in_df - len(this_df.index)))
 
-        print("Start encoding using OneHotEncoder...")
+
+        print("ENCODING: Start encoding using OneHotEncoder...")
         print(" ...encoding feature: Type")
         this_df_one_hot_encoded = self.do_one_hot_encoder(this_df, 'Type')
         this_df = this_df.reset_index().drop('index', axis=1)
@@ -63,22 +65,29 @@ class CleanData:
         this_df = this_df.reset_index().drop('index', axis=1)
         this_df = self.pd.concat([this_df, this_df_one_hot_encoded], axis=1)
 
-        print(this_df.head())
+    #   convert Date feature to proper datetime64
+        print("CONVERT: Date feature to proper datetime64")
+        this_df['Date'] = self.pd.to_datetime(this_df['Date'], errors='raise', dayfirst=1)
+
+        print("MISSING: Price is Target column => Drop rows missing Price values")
+        pre_num_rows_in_df = len(this_df.index)
+        self.drop_rows_with_no_price_values(this_df)
+        print(" ...Missing Price -> How many rows were dropped? : {}".format(pre_num_rows_in_df - len(this_df.index)))
 
 
-        # print("Drop rows missing Price values")
-        # pre_num_rows_in_df = len(this_df.index)
-        # self.drop_rows_with_no_price_values(this_df)
-        # print(" ...Missing Price -> How many rows were dropped? : {}".format(pre_num_rows_in_df - len(this_df.index)))
-        #
-        # print("Drop rows missing Distance values")
-        # pre_num_rows_in_df = len(this_df.index)
-        # self.drop_rows_with_no_distance_values(this_df)
-        # print(" ...Missing Distance -> How many rows were dropped? : {}".format(pre_num_rows_in_df - len(this_df.index)))
+
+        objects = []
+        for i in this_df.columns.values:
+            if this_df[i].dtype == 'O':
+                objects.append(str(i))
+        print("OBJECTS: Drop features with object data type: {}".format(objects))
+        df = this_df.drop(objects, axis=1)
+
 
         # Show the dimensions of the data now?
         print("****************************************************************")
         print("Post-Clean Dataset Dimensions... : {}".format(this_df.shape))
+        print("Post-Clean Memory Usage : {}".format(this_df.memory_usage(deep=True).sum()))
         print("****************************************************************")
 
 
@@ -130,6 +139,6 @@ class CleanData:
         cat_encoder = self.OneHotEncoder(sparse=False)
         this_df_type_reshaped = this_df[feature_name_to_encode].values.reshape(-1, 1)
         this_df_type_one_hot_encoded = cat_encoder.fit_transform(this_df_type_reshaped)
-        categories = cat_encoder.categories_
+        categories = cat_encoder.get_feature_names([feature_name_to_encode])#cat_encoder.categories_
         this_df_type_one_hot_encoded = self.pd.DataFrame(this_df_type_one_hot_encoded, columns=categories)
         return this_df_type_one_hot_encoded

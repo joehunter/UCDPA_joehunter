@@ -4,6 +4,8 @@ import discovery
 import regression
 import regularization
 
+import pandas as pd
+
 choose_data = int(input("Press 1 to choose local data already downloaded OR press 2 to download latest data from Kaggle(requires an API Token)?"))
 
 if choose_data == 1:
