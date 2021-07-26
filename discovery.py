@@ -21,7 +21,7 @@ class EDA:
         self.plt.title('log(Price)')
         self.plt.show()
 
-        print(df.shape)
+        print(this_df.shape)
 
     def correlation_heatmap(self, this_df):
             # use the pands .corr() function to compute pairwise correlations for the dataframe
