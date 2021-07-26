@@ -8,6 +8,21 @@ class EDA:
 
         self.correlation_heatmap(this_df)
 
+        this_df['log_Price'] = np.log1p(this_df.Price.dropna())
+
+        log_price_mean = this_df['log_Price'].mean()
+        log_price_std = this_df['log_Price'].std()
+
+        # view log(price) data
+        this_df.log_Price.hist(bins=20)
+        self.plt.axvline((log_price_mean + log_price_std), color='k', linestyle='--')
+        self.plt.axvline((log_price_mean - log_price_std), color='k', linestyle='--')
+        self.plt.axvline(log_price_mean, color='k', linestyle='-')
+        self.plt.title('log(Price)')
+        self.plt.show()
+
+        print(df.shape)
+
     def correlation_heatmap(self, this_df):
             # use the pands .corr() function to compute pairwise correlations for the dataframe
             corr = this_df.corr()

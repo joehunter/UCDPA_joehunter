@@ -19,16 +19,21 @@ class CleanData:
             this_df = self.drop_duplicates(this_df)
             print(" ...Any duplicates remain? : {}".format(self.are_there_duplicates(this_df)))
 
-        self.does_df_have_NULLS = self.are_there_nulls(this_df)
-        print("Are there any NULLs? : {}".format(self.does_df_have_NULLS))
 
-        if self.does_df_have_NULLS:
-            print(" ...Going to remove the 3 features with most NULLS now...")
-            self.drop_features_with_most_nulls(this_df)
+        print("Drop 4 features not required? ['Suburb', 'Address', 'SellerG', 'CouncilArea']")
+        self.drop_features(this_df)
 
-        print("Are there any empty rows? : {}".format(self.are_there_empty_rows(this_df)))
 
-        print("Are there any empty features? : {}".format(self.are_there_empty_features(this_df)))
+       #self.does_df_have_NULLS = self.are_there_nulls(this_df)
+       #print("Are there any NULLs? : {}".format(self.does_df_have_NULLS))
+
+        #if self.does_df_have_NULLS:
+        #    print(" ...Going to remove the 3 features with most NULLS now...")
+        #    self.drop_features_with_most_nulls(this_df)
+
+        print("Are there any rows entirely EMPTY? : {}".format(self.are_there_empty_rows(this_df)))
+
+        print("Are there any features entirely EMPTY? : {}".format(self.are_there_empty_features(this_df)))
 
         print("Drop rows missing Price values")
         pre_num_rows_in_df = len(this_df.index)
@@ -78,3 +83,8 @@ class CleanData:
 
     def drop_rows_with_no_distance_values(self, this_df):
         this_df = this_df.dropna(subset=['Distance'], inplace=True)
+
+    def drop_features(self, this_df):
+        drop_list = ['Suburb', 'Address', 'SellerG', 'CouncilArea']
+        this_df = this_df.drop(drop_list, axis=1, inplace=True)
+
