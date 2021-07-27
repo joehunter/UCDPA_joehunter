@@ -3,16 +3,19 @@
 class CleanData:
 
     import pandas as pd
+    import numpy as np
     from sklearn.preprocessing import OneHotEncoder
 
     def __init__(self, this_df):
         print(this_df.head())
 
-        # Get the dimensions of the data
+
         print()
         print("****************************************************************")
-        print("Pre-Clean Dataset Dimensions : {}".format(this_df.shape))
-        print("Pre-Clean Memory Usage : {}".format(this_df.memory_usage(deep=True).sum()))
+        print("Cleaning | Pre Clean")
+        print("****************************************************************")
+        print("Dataset Dimensions : {}".format(this_df.shape))
+        print("Memory Usage : {}".format(this_df.memory_usage(deep=True).sum()))
         print("****************************************************************")
 
 
@@ -66,7 +69,7 @@ class CleanData:
         this_df = self.pd.concat([this_df, this_df_one_hot_encoded], axis=1)
 
     #   convert Date feature to proper datetime64
-        print("CONVERT: Date feature to proper datetime64")
+        print("CONVERT: Date feature to native datetime64")
         this_df['Date'] = self.pd.to_datetime(this_df['Date'], errors='raise', dayfirst=1)
 
         print("MISSING: Price is Target column => Drop rows missing Price values")
@@ -74,7 +77,8 @@ class CleanData:
         self.drop_rows_with_no_price_values(this_df)
         print(" ...Missing Price -> How many rows were dropped? : {}".format(pre_num_rows_in_df - len(this_df.index)))
 
-
+        print("CATEGORISE: Price into high/low binary values")
+        self.categorise_price(this_df)
 
         objects = []
         for i in this_df.columns.values:
@@ -85,10 +89,14 @@ class CleanData:
 
 
         # Show the dimensions of the data now?
+        print()
         print("****************************************************************")
-        print("Post-Clean Dataset Dimensions... : {}".format(this_df.shape))
-        print("Post-Clean Memory Usage : {}".format(this_df.memory_usage(deep=True).sum()))
+        print("Cleaning | Post Clean")
         print("****************************************************************")
+        print("Dataset Dimensions... : {}".format(this_df.shape))
+        print("Memory Usage : {}".format(this_df.memory_usage(deep=True).sum()))
+        print("****************************************************************")
+
 
 
     def are_there_nulls(self, this_df):
@@ -136,9 +144,22 @@ class CleanData:
         this_df = this_df.drop(drop_list, axis=1, inplace=True)
 
     def do_one_hot_encoder(self, this_df, feature_name_to_encode):
-        cat_encoder = self.OneHotEncoder(sparse=False)
+        this_one_hot_encoder = self.OneHotEncoder(sparse=False)
         this_df_type_reshaped = this_df[feature_name_to_encode].values.reshape(-1, 1)
-        this_df_type_one_hot_encoded = cat_encoder.fit_transform(this_df_type_reshaped)
-        categories = cat_encoder.get_feature_names([feature_name_to_encode])#cat_encoder.categories_
+        this_df_type_one_hot_encoded = this_one_hot_encoder.fit_transform(this_df_type_reshaped)
+        categories = this_one_hot_encoder.get_feature_names([feature_name_to_encode])
         this_df_type_one_hot_encoded = self.pd.DataFrame(this_df_type_one_hot_encoded, columns=categories)
         return this_df_type_one_hot_encoded
+
+    def categorise_price(self, this_df):
+        log_price_mean = this_df['Price_LG'].mean()
+        log_price_std = this_df['Price_LG'].std()
+
+        this_df['high_price'] = self.np.where(
+            this_df['Price_LG'] > (log_price_mean+log_price_std), 1, 0
+        )
+
+        this_df['low_price'] = self.np.where(
+            this_df['Price_LG'] < (log_price_mean-log_price_std), 1, 0
+        )
+

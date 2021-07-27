@@ -20,8 +20,9 @@ print(df.shape)
 print()
 print()
 
-#discovery.EDA(df)
+discovery.EDA(df)
 cleaning.CleanData(df)
+
 #regression.Linear(df)
 #regularization.Lasso(df)
 
