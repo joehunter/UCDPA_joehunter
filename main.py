@@ -21,7 +21,16 @@ print()
 print()
 
 discovery.EDA(df)
-cleaning.CleanData(df)
+class_cleaning = cleaning.CleanData(df)
+df = class_cleaning.return_df()
+
+#print(df.columns)
+#print(df.isna().sum())
+
+#print(df.columns[df.isnull().all(0)])
+
+
+
 
 #regression.Linear(df)
 #regularization.Lasso(df)

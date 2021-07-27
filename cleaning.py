@@ -3,12 +3,14 @@
 class CleanData:
 
     import pandas as pd
+    # https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas
+    pd.options.mode.chained_assignment = None
     import numpy as np
     from sklearn.preprocessing import OneHotEncoder
 
     def __init__(self, this_df):
-        print(this_df.head())
 
+        self.this_df = this_df
 
         print()
         print("****************************************************************")
@@ -80,13 +82,16 @@ class CleanData:
         print("CATEGORISE: Price into high/low binary values")
         self.categorise_price(this_df)
 
-        objects = []
-        for i in this_df.columns.values:
-            if this_df[i].dtype == 'O':
-                objects.append(str(i))
-        print("OBJECTS: Drop features with object data type: {}".format(objects))
-        df = this_df.drop(objects, axis=1)
+        self.set_nan_values_to_median_using_price_category(this_df)
 
+        # objects = []
+        # for i in this_df.columns.values:
+        #     if this_df[i].dtype == 'O':
+        #         objects.append(str(i))
+        # print("OBJECTS: Drop features with object data type: {}".format(objects))
+        # df = this_df.drop(objects, axis=1)
+
+        self.this_df = this_df
 
         # Show the dimensions of the data now?
         print()
@@ -163,3 +168,36 @@ class CleanData:
             this_df['Price_LG'] < (log_price_mean-log_price_std), 1, 0
         )
 
+
+    def set_nan_values_to_median_using_price_category(self, this_df):
+
+        # get list of all columns with NaN
+        cols = this_df.columns[this_df.isna().any()].tolist()
+
+        # remove latitude and longitude
+        cols.remove("Lattitude")
+        cols.remove("Longtitude")
+
+        # Add high and low price
+        cols.append("high_price")
+        cols.append("low_price")
+
+        # filter for these columns into a new dataframe
+        df_with_NaNs = this_df[cols]
+
+        df_with_NaNs.loc[df_with_NaNs['high_price'] == 1] = df_with_NaNs.loc[
+             df_with_NaNs['high_price'] == 1].apply(lambda x: x.fillna(x.median()), axis=0)
+
+        df_with_NaNs.loc[df_with_NaNs['low_price'] == 1] = df_with_NaNs.loc[
+            df_with_NaNs['low_price'] == 1].apply(lambda x: x.fillna(x.median()), axis=0)
+
+        df_with_NaNs.loc[df_with_NaNs['high_price' and 'low_price'] == 0] = df_with_NaNs.loc[
+            df_with_NaNs['high_price' and 'low_price'] == 0].apply(lambda x: x.fillna(x.median()), axis=0)
+
+        this_df = self.pd.concat([this_df.drop(cols, axis=1), df_with_NaNs], axis=1)
+
+        print(this_df.isna().sum())
+
+
+    def return_df(self):
+        return self.this_df

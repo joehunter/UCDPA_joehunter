@@ -55,7 +55,7 @@ class Import:
             zipref.extractall(extract_to)
 
 
-    def delete_all_files_from_this_folder(folder):
+    def delete_all_files_from_this_folder(self,folder):
         for filename in os.listdir(folder):
             file_path = os.path.join(folder, filename)
             try:

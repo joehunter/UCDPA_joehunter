@@ -83,4 +83,4 @@ class EDA:
         self.plt.axvline(log_price_mean, color='k', linestyle='-')
         self.plt.title('Log Transform of Price Feature')
         self.plt.savefig("./Output/log_transformation_using_np.png")
-        self.plt.show()
+        #self.plt.show()
