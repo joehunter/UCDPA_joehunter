@@ -21,8 +21,11 @@ print()
 print()
 
 discovery.EDA(df)
+
 class_cleaning = cleaning.CleanData(df)
 df = class_cleaning.return_df()
-#regression.Linear(df)
+
+regression.Linear(df)
+
 #regularization.Lasso(df)
 

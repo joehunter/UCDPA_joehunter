@@ -82,14 +82,16 @@ class CleanData:
         print("CATEGORISE: Price into high/low binary values")
         self.categorise_price(this_df)
 
-        self.set_nan_values_to_median_using_price_category(this_df)
+        print("NaNs: Populate NaNs with median values")
+        this_df = self.set_nan_values_to_median_using_price_category(this_df)
 
-        # objects = []
-        # for i in this_df.columns.values:
-        #     if this_df[i].dtype == 'O':
-        #         objects.append(str(i))
-        # print("OBJECTS: Drop features with object data type: {}".format(objects))
-        # df = this_df.drop(objects, axis=1)
+
+        objects = []
+        for i in this_df.columns.values:
+            if this_df[i].dtype == 'O':
+                objects.append(str(i))
+        print("OBJECTS: Drop features with object data type: {}".format(objects))
+        this_df = this_df.drop(objects, axis=1)
 
         self.this_df = this_df
 
@@ -196,8 +198,7 @@ class CleanData:
 
         this_df = self.pd.concat([this_df.drop(cols, axis=1), df_with_NaNs], axis=1)
 
-        print(this_df.isna().sum())
-
+        return this_df
 
     def return_df(self):
         return self.this_df
