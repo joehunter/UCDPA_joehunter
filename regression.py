@@ -1,12 +1,12 @@
 
 
 class Linear:
-    from sklearn.linear_model import LinearRegression
-    from sklearn.ensemble import GradientBoostingRegressor
+
     import numpy as np
-    from sklearn.metrics import mean_squared_error
     from sklearn.preprocessing import StandardScaler
 
+    from sklearn.linear_model import LinearRegression
+    from sklearn.ensemble import GradientBoostingRegressor
 
 
     def __init__(self, this_df):
@@ -43,28 +43,27 @@ class Linear:
 
 
     def do_gradient_boosting_regressor(self, X_train, X_test, y_train, y_test):
+        from sklearn.metrics import mean_squared_error
 
-        GBRT = self.GradientBoostingRegressor(max_depth=2, n_estimators=120)
-        GBRT.fit(X_train, y_train)
+        # scale X_train values
+        scaler = self.StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train.astype(self.np.float64))
+        X_test_scaled = scaler.transform(X_test.astype(self.np.float64))
 
-        sc = self.StandardScaler()
-        #X_train_std = sc.fit_transform(X_train)
-        X_test_std = sc.transform(X_test)
+        GBRT_scaled = self.GradientBoostingRegressor(max_depth=2, n_estimators=120)
+        GBRT_scaled.fit(X_train_scaled, y_train)
 
-        #y_pred = GBRT.staged_predict(X_test)
-
-        errors = self.mean_squared_error(y_test, GBRT.predict(X_test_std))
+        errors = [mean_squared_error(y_test, y_pred) for y_pred in GBRT_scaled.staged_predict(X_test_scaled)]
         best_n_estimators = self.np.argmin(errors)
 
-
-        GBRT_best = self.GradientBoostingRegressor(max_depth=2, n_estimators=best_n_estimators)
-        GBRT_best.fit(X_train, y_train)
-        y_pred = GBRT_best.predict(X_test)
+        GBRT_scaled_best = self.GradientBoostingRegressor(max_depth=2, n_estimators=best_n_estimators)
+        GBRT_scaled_best.fit(X_train_scaled, y_train)
+        y_pred = GBRT_scaled_best.predict(X_test_scaled)
 
         # Display
-        print('Gradient Boosting Regressor')
+        print('Scaled Gradient Boosting Regressor')
         print('\nR-squared training set:')
-        print(GBRT_best.score(X_train, y_train))
+        print(GBRT_scaled_best.score(X_train_scaled, y_train))
 
         print('\nR-squared test set:')
-        print(GBRT_best.score(X_test, y_test))
+        print(GBRT_scaled_best.score(X_test_scaled, y_test))
