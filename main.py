@@ -1,8 +1,9 @@
 import file_handling
 import cleaning
 import discovery
+import preprocessing
 import regression
-import regularization
+
 
 import pandas as pd
 
@@ -16,16 +17,19 @@ else:
     fh = file_handling.Import(0)
 
 df = fh.return_df()
-print(df.shape)
-print()
-print()
+
 
 discovery.EDA(df)
 
 class_cleaning = cleaning.CleanData(df)
 df = class_cleaning.return_df()
 
+
+pre_processing = preprocessing.Encode(df)
+df = pre_processing.return_df()
+
+
 regression.Linear(df)
 
-#regularization.Lasso(df)
+
 
