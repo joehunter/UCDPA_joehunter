@@ -7,20 +7,39 @@ class EDA:
     # Import PowerTransformer
     from sklearn.preprocessing import PowerTransformer
 
+
+
     def __init__(self, this_df):
 
 
         print()
         print("****************************************************************")
-        print("EDA | Start")
+        print("@EDA | Start")
         print("****************************************************************")
 
-        print("PRICE: Log transformation to improve skewed data")
+        print('FEATURES: Number of features? %s' % this_df.shape[1])
+        print('ROWS: Number of rows? %s' % this_df.shape[0])
+
+
+        print('\nSAMPLES: Head & Tail')
+        print(this_df.head().append(this_df.tail()))
+
+        print('\nINFO: .info()')
+        print(this_df.info())
+
+        print('\nDESCRIBE: Transpose .describe()')
+        print(this_df.describe().transpose())
+
+        print('\nCORRELATE: Create correlation heatmap')
+        self.correlation_heatmap(this_df)
+
+
+        print("\nPRICE: Log transformation to improve skewed data")
         #   https://campus.datacamp.com/courses/preprocessing-for-machine-learning-in-python/standardizing-data?ex=4
         self.do_log_transformation_using_np(this_df)
 
         print("****************************************************************")
-        print("EDA | End")
+        print("@EDA | End")
         print("****************************************************************")
 
     def do_log_transformation_using_power_transformer(self, this_df):
@@ -52,18 +71,10 @@ class EDA:
 
 
     def correlation_heatmap(self, this_df):
-            # use the pands .corr() function to compute pairwise correlations for the dataframe
-            corr = this_df.corr()
-            # visualise the data with seaborn
-            mask = self.np.triu(self.np.ones_like(corr, dtype=self.np.bool))
-            self.sns.set_style(style='white')
-            f, ax = self.plt.subplots(figsize=(11, 9))
-            cmap = self.sns.diverging_palette(10, 250, as_cmap=True)
-            self.sns.heatmap(corr, mask=mask, cmap=cmap,
-                    square=True,
-                    linewidths=.5, cbar_kws={"shrink": .5}, ax=ax)
-            self.plt.savefig("./Output/Correlation_plot.png")
-            self.plt.show()
+        f, ax = self.plt.subplots(figsize=(10, 10))
+        self.sns.heatmap(this_df.corr(), annot=True, linewidths=5, fmt='.1f', ax=ax, cmap='Reds')
+        self.plt.savefig("./Output/Correlation_plot.png")
+        #self.plt.show()
 
 
     def do_log_transformation_using_np(self, this_df):

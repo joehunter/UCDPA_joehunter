@@ -6,7 +6,8 @@ class CleanData:
     # https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas
     pd.options.mode.chained_assignment = None
     import numpy as np
-    from sklearn.preprocessing import OneHotEncoder
+    from sklearn.impute import SimpleImputer
+
 
     def __init__(self, this_df):
 
@@ -68,8 +69,10 @@ class CleanData:
         print("CATEGORISE: Price into high/low binary values")
         self.categorise_price(this_df)
 
-        print("NaNs: Populate NaNs with median values")
-        this_df = self.set_nan_values_to_median_using_price_category(this_df)
+        print("IMPUTE: Populate NaNs with median values")
+        this_df = self.impute_with_median_using_price_category(this_df)
+        #this_df = self.impute_missing_data(this_df)
+
 
         self.this_df = this_df
 
@@ -143,7 +146,9 @@ class CleanData:
         )
 
 
-    def set_nan_values_to_median_using_price_category(self, this_df):
+    def impute_with_median_using_price_category(self, this_df):
+
+        this_df = this_df.reset_index()
 
         # get list of all columns with NaN
         cols = this_df.columns[this_df.isna().any()].tolist()
@@ -155,6 +160,8 @@ class CleanData:
         # Add high and low price
         cols.append("high_price")
         cols.append("low_price")
+
+        print(cols)
 
         # filter for these columns into a new dataframe
         df_with_NaNs = this_df[cols]
@@ -171,6 +178,34 @@ class CleanData:
         this_df = self.pd.concat([this_df.drop(cols, axis=1), df_with_NaNs], axis=1)
 
         return this_df
+
+
+
+    def impute_missing_data(self, this_df):
+        #   https://campus.datacamp.com/courses/supervised-learning-with-scikit-learn/preprocessing-and-pipelines?ex=5
+
+        this_df = this_df.reset_index()
+
+        # get list of all columns with NaN
+        cols = this_df.columns[this_df.isna().any()].tolist()
+
+        # remove latitude and longitude
+        cols.remove("Lattitude")
+        cols.remove("Longtitude")
+
+        # filter for these columns into a new dataframe
+        df_with_NaNs = this_df[cols]
+
+        imp = self.SimpleImputer(missing_values=self.np.nan, strategy='mean')
+        imp.fit(df_with_NaNs)
+        new_df = self.pd.DataFrame(imp.transform(df_with_NaNs), columns=cols)
+
+        this_df = this_df.drop(cols, axis=1)
+
+        this_df = self.pd.concat([this_df, new_df], axis=1)
+
+        return this_df
+
 
     def return_df(self):
         return self.this_df
