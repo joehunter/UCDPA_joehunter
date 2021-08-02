@@ -3,6 +3,7 @@ class EDA:
     import matplotlib.pyplot as plt
     import seaborn as sns
     import numpy as np
+    import scipy.stats as stats
 
     # Import PowerTransformer
     from sklearn.preprocessing import PowerTransformer
@@ -30,13 +31,38 @@ class EDA:
         print('\nDESCRIBE: Transpose .describe()')
         print(this_df.describe().transpose())
 
+
         print('\nCORRELATE: Create correlation heatmap')
         self.correlation_heatmap(this_df)
+        print('FEATURE SELECTION: Which feature(s) are highly correlated to target feature Price?')
+        cor = this_df.corr()
+        # Correlation with output variable
+        cor_target = abs(cor["Price"])
+        # Selecting highly correlated features
+        relevant_features = cor_target[cor_target > 0.3].sort_values(ascending=False)
+        relevant_features = relevant_features.drop(["Price"])
+        print(relevant_features)
+
+        sr = this_df['Price']
+        pre_log_kurtosis = sr.kurtosis(skipna=True)
+        print("\nPRICE KURTOSIS: What is the kurtosis of the target feature? : {}".format(pre_log_kurtosis))
+        pre_log_skew = sr.skew(skipna=True)
+        print("PRICE SKEW: What is the skew of the target feature? : {}".format(pre_log_skew))
+
+        #   If the skewness is less than -1 or greater than 1, the data are highly skewed
+        if pre_log_skew > 1 or pre_log_skew < -1:
+            print("PRICE: Price data are highly skewed => do Log transformation to improve")
+            #   https://campus.datacamp.com/courses/preprocessing-for-machine-learning-in-python/standardizing-data?ex=4
+            self.do_log_transformation_using_np(this_df)
+            sr = this_df['Price_LG']
+            post_log_kurtosis = sr.kurtosis(skipna=True)
+            print("...KURTOSIS: What is the KURTOSIS of LOG transform of Price? : {}".format(post_log_kurtosis))
+            post_log_skew = sr.skew(skipna=True)
+            print("...SKEW: What is the SKEW LOG transform of Price? : {}".format(post_log_skew))
 
 
-        print("\nPRICE: Log transformation to improve skewed data")
-        #   https://campus.datacamp.com/courses/preprocessing-for-machine-learning-in-python/standardizing-data?ex=4
-        self.do_log_transformation_using_np(this_df)
+
+
 
         print("****************************************************************")
         print("@EDA | End")
@@ -81,6 +107,7 @@ class EDA:
         #   Caveat limitations of this approach
         #   https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4120293/
 
+        print("...LOG_TRANSFORM: In function do_log_transformation_using_np()")
         this_df['Price_no_NA'] = this_df.Price.dropna()
         this_df['Price_LG'] = self.np.log1p(this_df.Price.dropna())
 
