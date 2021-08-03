@@ -34,15 +34,6 @@ class CleanData:
             this_df = self.drop_duplicates(this_df)
             print(" ...Any duplicates remain? : {}".format(self.are_there_duplicates(this_df)))
 
-        print("DROP: 4 features not required: ['Suburb', 'Address', 'SellerG', 'CouncilArea']")
-        self.drop_features(this_df)
-
-        # self.does_df_have_NULLS = self.are_there_nulls(this_df)
-        # print("Are there any NULLs? : {}".format(self.does_df_have_NULLS))
-        # if self.does_df_have_NULLS:
-        #    print(" ...Going to remove the 3 features with most NULLS now...")
-        #    self.drop_features_with_most_nulls(this_df)
-
 
         list_check_for_NaNs = ['Type', 'Method', 'Regionname']
         self.does_df_have_NaNs = self.are_there_NaNs(this_df, list_check_for_NaNs)
@@ -124,12 +115,7 @@ class CleanData:
     def drop_rows_with_no_distance_values(self, this_df):
         this_df = this_df.dropna(subset=['Distance'], inplace=True)
 
-    def drop_features(self, this_df):
-    #   'Suburb', 'Address', and 'SellerG' have predominantly unique values to drop these
-    #   There is a direct correlation between CouncilArea and RegionName feature so adds
-    #   nothing to the data => drop
-        drop_list = ['Suburb', 'Address', 'SellerG', 'CouncilArea']
-        this_df = this_df.drop(drop_list, axis=1, inplace=True)
+
 
 
 

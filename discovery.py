@@ -34,7 +34,7 @@ class EDA:
 
         print('\nCORRELATE: Create correlation heatmap')
         self.correlation_heatmap(this_df)
-        print('FEATURE SELECTION: Which feature(s) are highly correlated to target feature Price?')
+        print('...Which feature(s) are highly correlated (> 0.3) to target feature Price?')
         cor = this_df.corr()
         # Correlation with output variable
         cor_target = abs(cor["Price"])
@@ -43,9 +43,14 @@ class EDA:
         relevant_features = relevant_features.drop(["Price"])
         print(relevant_features)
 
+        print('\nFEATURE SELECTION: Check for features that have a high correlation with each other?')
+        self.drop_features(this_df)
+
+
+        print("\nSKEWNESS & KURTOSIS: Check for each in target feature Price")
         sr = this_df['Price']
         pre_log_kurtosis = sr.kurtosis(skipna=True)
-        print("\nPRICE KURTOSIS: What is the kurtosis of the target feature? : {}".format(pre_log_kurtosis))
+        print("PRICE KURTOSIS: What is the kurtosis of the target feature? : {}".format(pre_log_kurtosis))
         pre_log_skew = sr.skew(skipna=True)
         print("PRICE SKEW: What is the skew of the target feature? : {}".format(pre_log_skew))
 
@@ -122,3 +127,18 @@ class EDA:
         self.plt.title('Log Transform of Price Feature')
         self.plt.savefig("./Output/log_transformation_using_np.png")
         #self.plt.show()
+
+
+    def drop_features(self, this_df):
+
+    #   'Suburb' and 'SellerG' have predominantly unique values so drop these
+    #   There is a direct correlation between CouncilArea and RegionName feature so adds
+    #   nothing to the data => drop
+
+        print('...Rooms and Bedroom2 highly correlated so drop Bedroom2 as it has NaNs')
+        print(this_df[["Rooms", "Bedroom2"]].corr())
+
+        print('...Suburb,SellerG have predominantly unique values so drop these too')
+        drop_list = ['Suburb', 'SellerG', 'CouncilArea', 'Bedroom2']
+        this_df = this_df.drop(drop_list, axis=1, inplace=True)
+
