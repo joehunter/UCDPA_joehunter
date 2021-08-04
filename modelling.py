@@ -48,7 +48,7 @@ class RunModels:
         y_pred = OLS.predict(X_test)
 
         print('\nLinear Regression')
-        print('...R-squared training set: {}'.format(OLS.score(X_train, y_train)))
+        print('...R-squared training set: ', OLS.score(X_train, y_train) * 100, '%')
         print('...R-squared test set: {}'.format(OLS.score(X_test, y_test)))
 
 
