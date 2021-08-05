@@ -1,10 +1,8 @@
 class RunModels:
 
     import numpy as np
-    from sklearn.preprocessing import StandardScaler
-    from sklearn.linear_model import LinearRegression
-    from sklearn.ensemble import GradientBoostingRegressor
-    from sklearn.ensemble import RandomForestRegressor
+    from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
 
     def __init__(self, this_df):
 
@@ -29,12 +27,14 @@ class RunModels:
         print("@Modelling | Start")
         print("****************************************************************")
 
-        self.do_ols(X_train, X_test, y_train, y_test)
-        self.do_ols_scaled(X_test_scaled, X_train_scaled, y_train, y_test)
-        self.do_random_forest_regression(X_train, X_test, y_train, y_test)
-        self.do_random_forest_regression_scaled(X_test_scaled, X_train_scaled, y_train, y_test)
-        self.do_gradient_boosting_regressor(X_train, X_test, y_train, y_test)
-        self.do_gradient_boosting_regressor_scaled(X_test_scaled, X_train_scaled, y_train, y_test)
+        # self.do_ols(X_train, X_test, y_train, y_test)
+        # self.do_ols_scaled(X_test_scaled, X_train_scaled, y_train, y_test)
+        # self.do_random_forest_regression(X_train, X_test, y_train, y_test)
+        # self.do_random_forest_regression_scaled(X_test_scaled, X_train_scaled, y_train, y_test)
+        # self.do_gradient_boosting_regressor(X_train, X_test, y_train, y_test)
+        # self.do_gradient_boosting_regressor_scaled(X_test_scaled, X_train_scaled, y_train, y_test)
+
+        self.train_model(this_df)
 
         print("\n****************************************************************")
         print("@Modelling | End")
@@ -119,3 +119,88 @@ class RunModels:
         print('\nScaled Gradient Boosting Regressor')
         print('...R-squared training set: {}'.format(GBRT_scaled_best.score(X_train_scaled, y_train)))
         print('...R-squared test set: {}'.format(GBRT_scaled_best.score(X_test_scaled, y_test)))
+
+
+    def train_model(self, df):
+
+        from sklearn.model_selection import KFold
+        from sklearn.linear_model import LinearRegression
+        from sklearn.linear_model import Lasso
+        from sklearn.linear_model import ElasticNet
+        from sklearn.tree import DecisionTreeRegressor
+        from sklearn.neighbors import KNeighborsRegressor
+        from sklearn.svm import SVR
+        from sklearn.ensemble import AdaBoostRegressor
+        from sklearn.ensemble import GradientBoostingRegressor
+        from sklearn.ensemble import RandomForestRegressor
+        from sklearn.ensemble import ExtraTreesRegressor
+
+
+        from sklearn.model_selection import train_test_split
+        from sklearn.model_selection import cross_val_score
+        from sklearn import linear_model
+
+        import operator
+
+        #drop_list = ["Price_LG", "Date"]
+        #X = df.drop(drop_list, axis=1)
+
+
+        #X = df[['Rooms', 'Distance', 'Postcode', 'Landsize', 'BuildingArea', 'YearBuilt']]
+        drop_list = ['Price', 'Price_LG', 'high_price', 'low_price', 'Price_no_NA', 'Date', 'Lattitude', 'Longtitude']
+        X = df.drop(drop_list, axis=1)
+        Y = df["Price_LG"]
+        print(X.shape)
+        print(Y.shape)
+
+        scaler = self.MinMaxScaler().fit(X)
+        scaled_X = scaler.transform(X)
+
+        seed = 9
+        test_size = 0.20
+
+        X_train, X_test, Y_train, Y_test = train_test_split(scaled_X, Y, test_size=test_size, random_state=seed)
+
+        print(X_train.shape)
+        print(X_test.shape)
+        print(Y_train.shape)
+        print(Y_test.shape)
+
+        # user variables to tune
+        folds = 10
+        metric = "neg_mean_squared_error"
+
+        # hold different regression models in a single dictionary
+        models = {}
+        models["Linear"] = LinearRegression()
+        models["Lasso"] = Lasso()
+        models["ElasticNet"] = ElasticNet()
+        models["KNN"] = KNeighborsRegressor()
+        models["DecisionTree"] = DecisionTreeRegressor()
+        #models["SVR"] = SVR()
+        models["AdaBoost"] = AdaBoostRegressor()
+        models["GradientBoost"] = GradientBoostingRegressor()
+        models["RandomForest"] = RandomForestRegressor()
+        models["ExtraTrees"] = ExtraTreesRegressor()
+
+        # 10-fold cross validation for each model
+        model_results = []
+        model_names = []
+        rate_scores = {}
+
+        for model_name in models:
+            model = models[model_name]
+            #   ValueError: Setting a random_state has no effect since shuffle is False.
+            #   You should leave random_state to its default (None), or set shuffle=True.
+            k_fold = KFold(n_splits=folds, random_state=seed, shuffle=True)
+
+            lasso = linear_model.Lasso()
+            results = cross_val_score(model, X_train, Y_train, cv=k_fold, scoring=metric)
+
+            rate_scores[model_name] = round(results.mean(), 3)
+            model_results.append(results)
+            model_names.append(model_name)
+            print("{}: {}, {}".format(model_name, round(results.mean(), 3), round(results.std(), 3)))
+
+
+        print(  sorted(rate_scores.items(), key=operator.itemgetter(1),reverse=True)  )
