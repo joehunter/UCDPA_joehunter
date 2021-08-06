@@ -3,7 +3,7 @@ import cleaning
 import discovery
 import preprocessing
 import modelling
-
+import tuning
 
 choose_data = int(input("Press 1 to choose local data already downloaded OR press 2 to download latest data from Kaggle(requires an API Token)?"))
 
@@ -32,5 +32,7 @@ df = data_cleaning.return_df()
 pre_processing = preprocessing.Encode(df)
 df = pre_processing.return_df()
 
-modelling.RunModels(df)
+#modelling.RunModels(df)
+
+tuning.TuneModel(df)
 
