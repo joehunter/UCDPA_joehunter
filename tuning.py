@@ -19,8 +19,10 @@ class TuneModel:
         from sklearn.model_selection import train_test_split
         from sklearn.ensemble import RandomForestRegressor
         from sklearn.model_selection import RandomizedSearchCV
-        from sklearn.ensemble import GradientBoostingRegressor
+        import matplotlib.pyplot as plt
         import numpy as np
+        from sklearn.metrics import mean_squared_error
+        from sklearn.metrics import mean_absolute_error
 
         drop_list = ['Price', 'Price_LG', 'high_price', 'low_price', 'Price_no_NA', 'Date', 'Lattitude', 'Longtitude']
         X = this_df.drop(drop_list, axis=1)
@@ -44,26 +46,80 @@ class TuneModel:
         max_features = ['auto', 'sqrt']
 
         # Create the random grid
-        param_grid = {'learning_rate': learning_rate,
-                      'alpha': alpha,
-                      'n_estimators': n_estimators,
-                      'max_features': max_features,
-                      'max_depth': max_depth,
-                      'min_samples_split': min_samples_split,
-                      'min_samples_leaf': min_samples_leaf,
-                      }
-
-        print("Should see param grid next?")
-        print(param_grid)
+        # Number of trees in random forest
+        n_estimators = [int(x) for x in np.linspace(start=200, stop=2000, num=10)]
+        # Number of features to consider at every split
+        max_features = ['auto', 'sqrt']
+        # Maximum number of levels in tree
+        max_depth = [int(x) for x in np.linspace(10, 110, num=11)]
+        max_depth.append(None)
+        # Minimum number of samples required to split a node
+        min_samples_split = [2, 5, 10]
+        # Minimum number of samples required at each leaf node
+        min_samples_leaf = [1, 2, 4]
+        # Method of selecting samples for training each tree
+        bootstrap = [True, False]
+        # Create the random grid
+        random_grid = {'n_estimators': n_estimators,
+                       'max_features': max_features,
+                       'max_depth': max_depth,
+                       'min_samples_split': min_samples_split,
+                       'min_samples_leaf': min_samples_leaf,
+                       'bootstrap': bootstrap}
+        print(random_grid)
 
         # Initialize and fit the model.
-        model = GradientBoostingRegressor() #RandomForestRegressor()
-        model = RandomizedSearchCV(model, param_grid, cv=3)
+        model = RandomForestRegressor()
+        model = RandomizedSearchCV(model, random_grid, cv=3)
         model.fit(X_train_sample, y_train_sample)
 
         # get the best parameters
         best_params = model.best_params_
         print(best_params)
 
+        # refit model with best parameters
+        model_best = RandomForestRegressor(**best_params)
+        model_best.fit(X_train, y_train)
+        y_pred = model_best.predict(X_test)
 
 
+        feature_importance = model_best.feature_importances_
+
+        # Make importances relative to max importance.
+        feature_importance = 100.0 * (feature_importance / feature_importance.max())
+        sorted_idx = np.argsort(feature_importance)
+        pos = np.arange(sorted_idx.shape[0]) + 0.5
+
+        plt.subplot(1,2,2)
+        plt.barh(pos, feature_importance[sorted_idx], align='center')
+
+        plt.yticks(pos, X.columns.values[sorted_idx])
+        plt.xlabel('Relative Importance')
+        plt.title('Variable Importance')
+        plt.show()
+
+        # sort top features
+        top_features = np.where(feature_importance > 20)
+        top_features = X.columns[top_features].ravel()
+        print(top_features)
+
+
+        # Display.
+        print('Optimized Gradient Boosting Regressor')
+        print('\nR-squared training set:')
+        print(model_best.score(X_train, y_train))
+        print('\nMean absolute error training set: ')
+        print(mean_absolute_error(y_train, model_best.predict(X_train)))
+        print('\nMean squared error training set: ')
+        print(mean_squared_error(y_train, model_best.predict(X_train)))
+
+        print('\n\nR-squared test set:')
+        print(model_best.score(X_test, y_test))
+        print('\nMean absolute error test set: ')
+        print(mean_absolute_error(y_test, y_pred))
+        print('\nMean squared error test set: ')
+        print(mean_squared_error(y_test, y_pred))
+
+        # top features
+        print('\nTop indicators:')
+        print(top_features)

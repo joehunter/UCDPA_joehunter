@@ -32,7 +32,7 @@ df = data_cleaning.return_df()
 pre_processing = preprocessing.Encode(df)
 df = pre_processing.return_df()
 
-#modelling.RunModels(df)
+modelling.RunModels(df)
 
 tuning.TuneModel(df)
 
