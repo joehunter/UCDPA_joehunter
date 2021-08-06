@@ -105,8 +105,8 @@ class EDA:
         f, ax = self.plt.subplots(figsize=(10, 10))
         self.sns.heatmap(this_df.corr(), annot=True, linewidths=5, fmt='.1f', ax=ax, cmap='Reds')
         self.plt.savefig("./Output/Correlation_plot.png")
-        #self.plt.show()
-
+        self.plt.clf()
+        self.plt.close()
 
     def do_log_transformation_using_np(self, this_df):
         #   Caveat limitations of this approach
@@ -126,7 +126,8 @@ class EDA:
         self.plt.axvline(log_price_mean, color='k', linestyle='-')
         self.plt.title('Log Transform of Price Feature')
         self.plt.savefig("./Output/log_transformation_using_np.png")
-        #self.plt.show()
+        self.plt.clf()
+        self.plt.close()
 
 
     def drop_features(self, this_df):

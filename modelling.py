@@ -129,17 +129,18 @@ class RunModels:
         from sklearn.linear_model import ElasticNet
         from sklearn.tree import DecisionTreeRegressor
         from sklearn.neighbors import KNeighborsRegressor
-        from sklearn.svm import SVR
         from sklearn.ensemble import AdaBoostRegressor
         from sklearn.ensemble import GradientBoostingRegressor
         from sklearn.ensemble import RandomForestRegressor
         from sklearn.ensemble import ExtraTreesRegressor
+        from sklearn.metrics import mean_squared_error
 
 
         from sklearn.model_selection import train_test_split
         from sklearn.model_selection import cross_val_score
         from sklearn import linear_model
-
+        import numpy as np
+        import matplotlib.pyplot as plt
         import operator
 
         #drop_list = ["Price_LG", "Date"]
@@ -172,15 +173,15 @@ class RunModels:
 
         # hold different regression models in a single dictionary
         models = {}
-        models["Linear"] = LinearRegression()
-        models["Lasso"] = Lasso()
-        models["ElasticNet"] = ElasticNet()
-        models["KNN"] = KNeighborsRegressor()
-        models["DecisionTree"] = DecisionTreeRegressor()
-        models["AdaBoost"] = AdaBoostRegressor()
+        # models["Linear"] = LinearRegression()
+        # models["Lasso"] = Lasso()
+        # models["ElasticNet"] = ElasticNet()
+        # models["KNN"] = KNeighborsRegressor()
+        # models["DecisionTree"] = DecisionTreeRegressor()
+        # models["AdaBoost"] = AdaBoostRegressor()
         models["GradientBoost"] = GradientBoostingRegressor()
         models["RandomForest"] = RandomForestRegressor()
-        models["ExtraTrees"] = ExtraTreesRegressor()
+        # models["ExtraTrees"] = ExtraTreesRegressor()
 
         # 10-fold cross validation for each model
         model_results = []
@@ -203,3 +204,24 @@ class RunModels:
 
 
         print(  sorted(rate_scores.items(), key=operator.itemgetter(1),reverse=True)  )
+
+        # create and fit the best regression model
+        best_model = GradientBoostingRegressor(random_state=seed)
+        best_model.fit(X_train, Y_train)
+
+        # make predictions using the model
+        predictions = best_model.predict(X_test)
+        print("[INFO] MSE : {}".format(round(mean_squared_error(Y_test, predictions), 3)))
+
+        # plot model's feature importance
+        feature_importance = best_model.feature_importances_
+        feature_importance = 100.0 * (feature_importance / feature_importance.max())
+        sorted_idx = np.argsort(feature_importance)
+        pos = np.arange(sorted_idx.shape[0]) + .5
+        plt.barh(pos, feature_importance[sorted_idx], align='center')
+        plt.yticks(pos, X.columns.values[sorted_idx])
+        plt.xlabel('Relative Importance')
+        plt.title('Variable Importance')
+        plt.savefig("feature_importance.png")
+        plt.clf()
+        plt.close()
