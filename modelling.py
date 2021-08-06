@@ -177,7 +177,6 @@ class RunModels:
         models["ElasticNet"] = ElasticNet()
         models["KNN"] = KNeighborsRegressor()
         models["DecisionTree"] = DecisionTreeRegressor()
-        #models["SVR"] = SVR()
         models["AdaBoost"] = AdaBoostRegressor()
         models["GradientBoost"] = GradientBoostingRegressor()
         models["RandomForest"] = RandomForestRegressor()
