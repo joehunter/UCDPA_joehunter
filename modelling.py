@@ -10,7 +10,7 @@ class RunModels:
         print("****************************************************************")
 
         print("\nTrain models now for best score...this will take some time to run...")
-        self.train_model(this_df)
+        self.cross_validate_models(this_df)
 
         print("\n****************************************************************")
         print("@Modelling | End")
@@ -18,12 +18,10 @@ class RunModels:
 
 
 
-
-    def train_model(self, df):
+    def cross_validate_models(self, df):
 
         from sklearn.model_selection import train_test_split
         from sklearn.model_selection import cross_val_score
-        from sklearn import linear_model
         from sklearn.model_selection import KFold
         from sklearn.linear_model import LinearRegression
         from sklearn.linear_model import Lasso
@@ -34,9 +32,6 @@ class RunModels:
         from sklearn.ensemble import GradientBoostingRegressor
         from sklearn.ensemble import RandomForestRegressor
         from sklearn.ensemble import ExtraTreesRegressor
-        from sklearn.metrics import mean_squared_error
-
-
         from sklearn.preprocessing import MinMaxScaler
         import operator
 
@@ -55,11 +50,8 @@ class RunModels:
         X_train, X_test, Y_train, Y_test = train_test_split(scaled_X, Y, test_size=test_size, random_state=seed)
 
 
-        # user variables to tune
-        folds = 10
-        metric = "neg_mean_squared_error"
 
-        # hold different regression models in a single dictionary
+        # Use dictionary to store each model to be trained
         models = {}
         models["Linear"] = LinearRegression()
         models["Lasso"] = Lasso()
@@ -72,6 +64,9 @@ class RunModels:
         models["ExtraTrees"] = ExtraTreesRegressor()
 
         # 10-fold cross validation for each model
+        folds = 10
+        metric = "neg_mean_squared_error"
+
         model_results = []
         model_names = []
         rate_scores = {}
@@ -82,7 +77,7 @@ class RunModels:
             #   You should leave random_state to its default (None), or set shuffle=True.
             k_fold = KFold(n_splits=folds, random_state=seed, shuffle=True)
 
-            lasso = linear_model.Lasso()
+            #   https://campus.datacamp.com/courses/supervised-learning-with-scikit-learn/regression-2?ex=8
             results = cross_val_score(model, X_train, Y_train, cv=k_fold, scoring=metric)
 
             rate_scores[model_name] = round(results.mean(), 3)
@@ -92,7 +87,7 @@ class RunModels:
 
         ranked_model_scores = sorted(rate_scores.items(), key=operator.itemgetter(1), reverse=True)
 
-        # Print the names of the columns.
+        # Print in descending order the model and respective score
         print("\n{:<6} {:<15} {:<10}".format('RANK', 'MODEL', 'SCORE'))
         rank = 0
 
