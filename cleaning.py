@@ -17,10 +17,7 @@ class CleanData:
         print("****************************************************************")
         print("@Cleaning | Pre Clean")
         print("****************************************************************")
-        print("Dataset Dimensions : {}".format(this_df.shape))
-        print("Memory Usage : {}".format(this_df.memory_usage(deep=True).sum()))
-        print("****************************************************************")
-
+        print("PRE Dataset Dimensions... : {}".format(this_df.shape))
 
         print("EMPTY: Are there any rows entirely EMPTY? : {}".format(self.are_there_empty_rows(this_df)))
 
@@ -68,13 +65,12 @@ class CleanData:
         self.this_df = this_df
 
         # Show the dimensions of the data now?
-        print()
+        print("POST Dataset Dimensions... : {}".format(this_df.shape))
         print("****************************************************************")
         print("@Cleaning | Post Clean")
         print("****************************************************************")
-        print("Dataset Dimensions... : {}".format(this_df.shape))
-        print("Memory Usage : {}".format(this_df.memory_usage(deep=True).sum()))
-        print("****************************************************************")
+
+
 
 
 
@@ -116,9 +112,6 @@ class CleanData:
         this_df = this_df.dropna(subset=['Distance'], inplace=True)
 
 
-
-
-
     def categorise_price(self, this_df):
         log_price_mean = this_df['Price_LG'].mean()
         log_price_std = this_df['Price_LG'].std()
@@ -147,7 +140,6 @@ class CleanData:
         cols.append("high_price")
         cols.append("low_price")
 
-        print(cols)
 
         # filter for these columns into a new dataframe
         df_with_NaNs = this_df[cols]
