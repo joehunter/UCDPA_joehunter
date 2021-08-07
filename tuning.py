@@ -8,6 +8,7 @@ class TuneModel:
         print("@Tuning | Start")
         print("****************************************************************")
 
+        print("...Please note this will take some time to run...")
         self.tune_model(this_df)
 
         print("\n****************************************************************")
@@ -66,7 +67,7 @@ class TuneModel:
                        'min_samples_split': min_samples_split,
                        'min_samples_leaf': min_samples_leaf,
                        'bootstrap': bootstrap}
-        print(random_grid)
+
 
         # Initialize and fit the model.
         model = RandomForestRegressor()
@@ -75,7 +76,6 @@ class TuneModel:
 
         # get the best parameters
         best_params = model.best_params_
-        print(best_params)
 
         # refit model with best parameters
         model_best = RandomForestRegressor(**best_params)
@@ -85,41 +85,36 @@ class TuneModel:
 
         feature_importance = model_best.feature_importances_
 
-        # Make importances relative to max importance.
+        # Make importance relative to max importance.
         feature_importance = 100.0 * (feature_importance / feature_importance.max())
         sorted_idx = np.argsort(feature_importance)
         pos = np.arange(sorted_idx.shape[0]) + 0.5
 
-        plt.subplot(1,2,2)
+        plt.subplot(1, 2, 2)
         plt.barh(pos, feature_importance[sorted_idx], align='center')
 
         plt.yticks(pos, X.columns.values[sorted_idx])
+        plt.title('Feature Importance')
         plt.xlabel('Relative Importance')
         plt.title('Variable Importance')
-        plt.show()
 
-        # sort top features
-        top_features = np.where(feature_importance > 20)
-        top_features = X.columns[top_features].ravel()
-        print(top_features)
+        plt.savefig("./Output/feature_importance.png")
+        plt.clf()
+        plt.close()
+
 
 
         # Display.
-        print('Optimized Gradient Boosting Regressor')
-        print('\nR-squared training set:')
-        print(model_best.score(X_train, y_train))
-        print('\nMean absolute error training set: ')
-        print(mean_absolute_error(y_train, model_best.predict(X_train)))
-        print('\nMean squared error training set: ')
-        print(mean_squared_error(y_train, model_best.predict(X_train)))
+        print('Optimized Random Forest Regressor')
 
-        print('\n\nR-squared test set:')
-        print(model_best.score(X_test, y_test))
-        print('\nMean absolute error test set: ')
-        print(mean_absolute_error(y_test, y_pred))
-        print('\nMean squared error test set: ')
-        print(mean_squared_error(y_test, y_pred))
+        print("\n{:<40} {:<15}".format('METRIC', 'VALUE'))
+        print("{:40} {:<15}".format('R-squared training set', model_best.score(X_train, y_train)))
+        print("{:40} {:<15}".format('Mean absolute error training set', mean_absolute_error(y_train, model_best.predict(X_train))))
+        print("{:40} {:<15}".format('Mean squared error training set',mean_squared_error(y_train, model_best.predict(X_train))))
 
-        # top features
-        print('\nTop indicators:')
-        print(top_features)
+        print("{:40} {:<15}".format('\nR-squared test set', model_best.score(X_test, y_test)))
+        print("{:40} {:<15}".format('Mean absolute error test set', mean_absolute_error(y_test, y_pred)))
+        print("{:40} {:<15}".format('Mean squared error test set', mean_squared_error(y_test, y_pred)))
+
+
+

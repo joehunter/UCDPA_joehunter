@@ -9,7 +9,7 @@ class RunModels:
         print("@Modelling | Start")
         print("****************************************************************")
 
-        print("\nTrain models now for best score...")
+        print("\nTrain models now for best score...this will take some time to run...")
         self.train_model(this_df)
 
         print("\n****************************************************************")
@@ -90,13 +90,13 @@ class RunModels:
             model_names.append(model_name)
             print("...{}: {}, {}".format(model_name, round(results.mean(), 3), round(results.std(), 3)))
 
-        rate_scores_sorted_keys = sorted(rate_scores.items(), key=operator.itemgetter(1), reverse=True)
+        ranked_model_scores = sorted(rate_scores.items(), key=operator.itemgetter(1), reverse=True)
 
         # Print the names of the columns.
         print("\n{:<6} {:<15} {:<10}".format('RANK', 'MODEL', 'SCORE'))
-        rank=0
+        rank = 0
 
-        for r in rate_scores_sorted_keys:
+        for r in ranked_model_scores:
             rank += 1
             print("{:6} {:<15} {:<10}".format(rank, r[0], r[1]))
 
