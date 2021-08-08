@@ -1,8 +1,6 @@
 class RunModels:
 
-
     def __init__(self, this_df):
-
 
         print()
         print("****************************************************************")
@@ -15,7 +13,6 @@ class RunModels:
         print("\n****************************************************************")
         print("@Modelling | End")
         print("****************************************************************")
-
 
 
     def cross_validate_models(self, df):
@@ -50,7 +47,6 @@ class RunModels:
         X_train, X_test, Y_train, Y_test = train_test_split(scaled_X, Y, test_size=test_size, random_state=seed)
 
 
-
         # Use dictionary to store each model to be trained
         models = {}
         models["Linear"] = LinearRegression()
@@ -73,8 +69,6 @@ class RunModels:
 
         for model_name in models:
             model = models[model_name]
-            #   ValueError: Setting a random_state has no effect since shuffle is False.
-            #   You should leave random_state to its default (None), or set shuffle=True.
             k_fold = KFold(n_splits=folds, random_state=seed, shuffle=True)
 
             #   https://campus.datacamp.com/courses/supervised-learning-with-scikit-learn/regression-2?ex=8
@@ -85,9 +79,10 @@ class RunModels:
             model_names.append(model_name)
             print("...{}: {}, {}".format(model_name, round(results.mean(), 3), round(results.std(), 3)))
 
+        # Rank scores in descending order
         ranked_model_scores = sorted(rate_scores.items(), key=operator.itemgetter(1), reverse=True)
 
-        # Print in descending order the model and respective score
+        # Print in descending order each model and its respective scores
         print("\n{:<6} {:<15} {:<10}".format('RANK', 'MODEL', 'SCORE'))
         rank = 0
 
