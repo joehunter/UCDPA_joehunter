@@ -1,14 +1,30 @@
 
 class EDA:
+
+    """
+        Use this class to perform exploratory data analysis on data frame.
+
+        Methods
+        -------
+        do_log_transformation_using_power_transformer(self, this_df):
+            Do log transformation on Price column using PowerTransformer
+
+        correlation_heatmap(self, this_df):
+            Make correlation heatmap using Seaborn
+
+        do_log_transformation_using_np(self, this_df):
+            Do log transformation using Numpy
+
+        drop_features(self, this_df):
+            Drop features from dataframe
+
+    """
+
     import matplotlib.pyplot as plt
     import seaborn as sns
     import numpy as np
-    import scipy.stats as stats
-
     # Import PowerTransformer
     from sklearn.preprocessing import PowerTransformer
-
-
 
     def __init__(self, this_df):
 
@@ -66,15 +82,21 @@ class EDA:
             print("...SKEW: What is the SKEW LOG transform of Price? : {}".format(post_log_skew))
 
 
-
-
-
         print("****************************************************************")
         print("@EDA | End")
         print("****************************************************************")
 
+
+
     def do_log_transformation_using_power_transformer(self, this_df):
-    #   https://campus.datacamp.com/courses/feature-engineering-for-machine-learning-in-python/conforming-to-statistical-assumptions?ex=8
+        '''
+        Do log transformation on Price column using PowerTransformer
+        #   https://campus.datacamp.com/courses/feature-engineering-for-machine-learning-in-python/conforming-to-statistical-assumptions?ex=8
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe
+        '''
+
 
     #   Getting a warning with this method!
     #   RuntimeWarning: divide by zero encountered in log loglike = -n_samples / 2 * np.log(x_trans.var())
@@ -102,6 +124,12 @@ class EDA:
 
 
     def correlation_heatmap(self, this_df):
+        '''
+        Make correlation heatmap using Seaborn
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe
+        '''
         f, ax = self.plt.subplots(figsize=(10, 10))
         self.sns.heatmap(this_df.corr(), annot=True, linewidths=5, fmt='.1f', ax=ax, cmap='Reds')
         self.plt.savefig("./Output/Correlation_plot.png")
@@ -109,6 +137,13 @@ class EDA:
         self.plt.close()
 
     def do_log_transformation_using_np(self, this_df):
+        '''
+            Do log transformation using Numpy
+
+            Parameters:
+                this_df (dataframe): Pandas dataframe
+        '''
+
         #   Caveat limitations of this approach
         #   https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4120293/
 
@@ -130,14 +165,21 @@ class EDA:
         self.plt.close()
 
 
-    def drop_features(self, this_df):
 
-    #   'Suburb' and 'SellerG' have predominantly unique values so drop these
-    #   There is a direct correlation between CouncilArea and RegionName feature so adds
-    #   nothing to the data => drop
+    def drop_features(self, this_df):
+        '''
+            Drop features from dataframe
+
+            Parameters:
+                this_df (dataframe): Pandas dataframe
+        '''
 
         print('...Rooms and Bedroom2 highly correlated so drop Bedroom2 as it has NaNs')
         print(this_df[["Rooms", "Bedroom2"]].corr())
+
+        #   'Suburb' and 'SellerG' have predominantly unique values so drop these
+        #   There is a direct correlation between CouncilArea and RegionName feature so adds
+        #   nothing to the data => drop
 
         print('...Suburb,SellerG have predominantly unique values so drop these too')
         drop_list = ['Suburb', 'SellerG', 'CouncilArea', 'Bedroom2']

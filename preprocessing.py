@@ -8,7 +8,7 @@ class Encode:
      do_one_hot_encoder(this_df, feature_name_to_encode):
         Encode the named feature in the passed dataframe.
 
-    def return_df(self):
+    return_df(self):
         Returns this instance of the dataframe.
 
     """

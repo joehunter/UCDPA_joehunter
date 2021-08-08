@@ -38,22 +38,22 @@ class CleanData:
     drop_features_with_most_nulls(self, this_df):
         Drop from dataframe Top 3 features by volume with most Nulls.
 
-    def drop_rows_with_no_price_values(self, this_df):
+    drop_rows_with_no_price_values(self, this_df):
         Drop from dataframe any rows missing Price values.
 
-    def drop_rows_with_no_distance_values(self, this_df):
+    drop_rows_with_no_distance_values(self, this_df):
         Drop from dataframe any rows missing Distance values.
 
-    def categorise_price(self, this_df):
+    categorise_price(self, this_df):
         Categorise houses into High/Low for imputing.
 
-    def impute_with_median_using_price_category(self, this_df):
+    impute_with_median_using_price_category(self, this_df):
         Impute missing values using median based on high/low price.
 
-    def impute_missing_data(self, this_df):
+    impute_missing_data(self, this_df):
         Impute missing values using SimpleImputer.
 
-    def return_df(self):
+    return_df(self):
         Returns this instance of the dataframe.
 
     """
