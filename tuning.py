@@ -29,27 +29,45 @@ class TuneModel:
         X = this_df.drop(drop_list, axis=1)
         Y = this_df["Price_LG"]
 
-
         test_size = 0.20
         X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=test_size, random_state=42)
 
         test_size = 0.5
         X_train_sample, X_test_sample, y_train_sample, y_test_sample = train_test_split(X_train, y_train, test_size=test_size, random_state=42)
 
-        # Define the random grid
-        # Number of trees in random forest
+
+        #
+        #   Run in advance of optimizing to determine score...
+        #
+        RF = RandomForestRegressor(n_estimators=10)
+        RF.fit(X_train, y_train)
+        y_pred = RF.predict(X_test)
+
+        print('\nPre-Optimized Random Forest Regressor...')
+        print("R-squared training set:' {}".format(RF.score(X_train, y_train)))
+        print("R-squared test set:' {}".format(RF.score(X_test, y_test)))
+
+
+        #
+        # Define a grid of hyperparameter ranges
+        # https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html
+        #
+
+        # The number of trees in the forest
         n_estimators = [int(x) for x in np.linspace(start=200, stop=2000, num=10)]
-        # Number of features to consider at every split
+        # The number of features to consider when looking for the best split
         max_features = ['auto', 'sqrt']
-        # Maximum number of levels in tree
+        # The maximum depth of the tree.
         max_depth = [int(x) for x in np.linspace(10, 110, num=11)]
         max_depth.append(None)
-        # Minimum number of samples required to split a node
+
+        # The minimum number of samples required to split an internal node
         min_samples_split = [2, 5, 10]
-        # Minimum number of samples required at each leaf node
+        # The minimum number of samples required to be at a leaf node
         min_samples_leaf = [1, 2, 4]
-        # Method of selecting samples for training each tree
+        # Whether bootstrap samples are used when building trees. If False, the whole dataset is used to build each tree
         bootstrap = [True, False]
+
         # Create the random grid
         random_grid = {'n_estimators': n_estimators,
                        'max_features': max_features,
@@ -60,8 +78,8 @@ class TuneModel:
 
 
         # Initialize and fit the model.
-        model = RandomForestRegressor()
-        model = RandomizedSearchCV(model, random_grid, cv=3)
+        #   https://campus.datacamp.com/courses/supervised-learning-with-scikit-learn/fine-tuning-your-model?ex=11
+        model = RandomizedSearchCV(RandomForestRegressor(), random_grid, cv=3)
         model.fit(X_train_sample, y_train_sample)
 
         # get the best parameters
@@ -78,12 +96,12 @@ class TuneModel:
 
 
         # Print all metrics in output
-        print('Optimized Random Forest Regressor')
-
+        print('\nOptimized Random Forest Regressor')
+        print("Best Parameters: ", best_params)
         print("\n{:<40} {:<15}".format('METRIC', 'VALUE'))
         print("{:40} {:<15}".format('R-squared training set', model_best.score(X_train, y_train)))
         print("{:40} {:<15}".format('Mean absolute error training set', mean_absolute_error(y_train, model_best.predict(X_train))))
-        print("{:40} {:<15}".format('Mean squared error training set',mean_squared_error(y_train, model_best.predict(X_train))))
+        print("{:40} {:<15}".format('Mean squared error training set', mean_squared_error(y_train, model_best.predict(X_train))))
 
         print("{:40} {:<15}".format('\nR-squared test set', model_best.score(X_test, y_test)))
         print("{:40} {:<15}".format('Mean absolute error test set', mean_absolute_error(y_test, y_pred)))
