@@ -1,6 +1,18 @@
 
-
 class Encode:
+    """
+     Encoding using OneHotEncoder by this class.
+
+     Methods
+     -------
+     do_one_hot_encoder(this_df, feature_name_to_encode):
+        Encode the named feature in the passed dataframe.
+
+    def return_df(self):
+        Returns this instance of the dataframe.
+
+    """
+
     import pandas as pd
     from sklearn.preprocessing import OneHotEncoder
 
@@ -52,6 +64,14 @@ class Encode:
 
 
     def do_one_hot_encoder(self, this_df, feature_name_to_encode):
+        '''
+            Encode the named feature in the passed dataframe.
+
+                    Parameters:
+                            this_df (dataframe): Dataframe where feature is to be encoded
+                             feature_name_to_encode (string): Name of the feature to be encoded
+        '''
+
         this_one_hot_encoder = self.OneHotEncoder(sparse=False)
         this_df_type_reshaped = this_df[feature_name_to_encode].values.reshape(-1, 1)
         this_df_type_one_hot_encoded = this_one_hot_encoder.fit_transform(this_df_type_reshaped)
@@ -59,5 +79,16 @@ class Encode:
         this_df_type_one_hot_encoded = self.pd.DataFrame(this_df_type_one_hot_encoded, columns=categories)
         return this_df_type_one_hot_encoded
 
+
     def return_df(self):
+        '''
+        Returns this instance of the dataframe.
+
+            Parameters:
+            -------
+            None
+
+            Returns:
+                this_df (Dataframe): A dataframe
+        '''
         return self.this_df

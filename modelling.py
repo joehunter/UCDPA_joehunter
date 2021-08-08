@@ -1,4 +1,12 @@
 class RunModels:
+    """
+        This class runs various models against a provided dataframe.
+
+        Methods
+        -------
+        cross_validate_models(df):
+            Uses cross_val_score to run various regression models against dataset.
+        """
 
     def __init__(self, this_df):
 
@@ -16,6 +24,14 @@ class RunModels:
 
 
     def cross_validate_models(self, df):
+
+        '''
+        Uses cross_val_score to run various regression models against dataset.
+
+                Parameters:
+                        df (dataframe): Pandas dataframe with cleaned data.
+
+        '''
 
         from sklearn.model_selection import train_test_split
         from sklearn.model_selection import cross_val_score

@@ -1,6 +1,15 @@
 
 class TuneModel:
 
+    """
+    This class is used to hyperparameter tune the data
+
+    Methods
+    -------
+    tune_model(this_df):
+        Tune the model using RandomizedSearchCV.
+    """
+
     def __init__(self, this_df):
 
 
@@ -17,6 +26,13 @@ class TuneModel:
 
 
     def tune_model(self, this_df):
+
+        '''
+          Tune the model using RandomizedSearchCV.
+
+                  Parameters:
+                          this_df (dataframe): Pandas Dataframe with cleaned data to model
+        '''
 
         from sklearn.model_selection import train_test_split
         from sklearn.ensemble import RandomForestRegressor

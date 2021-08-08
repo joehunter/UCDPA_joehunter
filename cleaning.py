@@ -1,6 +1,62 @@
 
-
 class CleanData:
+    """
+     Cleans source dataframe to remove anomalies impacting on analysis.
+
+     Methods
+     -------
+     are_there_nulls(self, this_df):
+        Check for nulls.
+
+    are_there_NaNs(self, this_df, list_check_for_NaNs):
+        Check for NaNs.
+
+    are_there_duplicates(self, this_df):
+        Check for duplicates.
+
+    are_there_empty_rows(self, this_df):
+        Check for empty rows.
+
+    are_there_empty_features(self, this_df):
+        Check for empty features.
+
+     drop_duplicates(self, this_df):
+        Drop duplicates if present.
+
+    are_there_empty_rows(self, this_df):
+        Check for empty rows.
+
+    are_there_empty_features(self, this_df):
+        Check for empty features.
+
+    drop_duplicates(self, this_df):
+        Drop duplicates if present.
+
+    drop_rows_with_NaNs(self, this_df, list_check_for_NaNs):
+        Drop NaNs from dataframe.
+
+    drop_features_with_most_nulls(self, this_df):
+        Drop from dataframe Top 3 features by volume with most Nulls.
+
+    def drop_rows_with_no_price_values(self, this_df):
+        Drop from dataframe any rows missing Price values.
+
+    def drop_rows_with_no_distance_values(self, this_df):
+        Drop from dataframe any rows missing Distance values.
+
+    def categorise_price(self, this_df):
+        Categorise houses into High/Low for imputing.
+
+    def impute_with_median_using_price_category(self, this_df):
+        Impute missing values using median based on high/low price.
+
+    def impute_missing_data(self, this_df):
+        Impute missing values using SimpleImputer.
+
+    def return_df(self):
+        Returns this instance of the dataframe.
+
+    """
 
     import pandas as pd
     # https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas
@@ -75,21 +131,58 @@ class CleanData:
 
 
     def are_there_nulls(self, this_df):
+        '''
+        Check for nulls.
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe to check
+        '''
         return bool(this_df.isnull().sum().sum() > 0)
 
     def are_there_NaNs(self, this_df, list_check_for_NaNs):
+        '''
+        Check for NaNs.
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe to check
+        '''
         return bool(this_df[list_check_for_NaNs].isna().sum().sum() > 0)
 
+
     def are_there_duplicates(self, this_df):
+        '''
+        Check for duplicates.
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe to check
+        '''
         return bool(this_df[["Address", "Date"]].duplicated().any())
 
     def are_there_empty_rows(self, this_df):
+        '''
+        Check for empty rows.
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe to check
+        '''
         return bool(this_df.isnull().all(axis=1).any())
 
     def are_there_empty_features(self, this_df):
+        '''
+        Check for empty features.
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe to check
+        '''
         return bool(this_df.isnull().all(axis=0).any())
 
     def drop_duplicates(self, this_df):
+        '''
+        Drop duplicates if present.
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe to drop duplicates from in place.
+        '''
         pre_num_rows_in_df = len(this_df.index)
         list_cols_used_to_identify_duplicates = ["Address", "Date"]
         this_df.drop_duplicates(subset=list_cols_used_to_identify_duplicates, keep='first', inplace=True)
@@ -98,21 +191,51 @@ class CleanData:
         return this_df
 
     def drop_rows_with_NaNs(self, this_df, list_check_for_NaNs):
+        '''
+        Drop NaNs from dataframe.
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe to drop from.
+        '''
         this_df = this_df.dropna(subset=list_check_for_NaNs, axis=0)
         return this_df
 
     def drop_features_with_most_nulls(self, this_df):
+        '''
+        Drop from dataframe Top 3 features by volume with most Nulls.
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe to drop from.
+        '''
         array_features = this_df.isnull().sum().sort_values(ascending=False).head(3).index.values
         return this_df.drop(array_features, axis=1, inplace=True)
 
     def drop_rows_with_no_price_values(self, this_df):
+        '''
+        Drop from dataframe any rows missing Price values.
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe to drop from.
+        '''
         this_df = this_df.dropna(subset=['Price'], inplace=True)
 
     def drop_rows_with_no_distance_values(self, this_df):
+        '''
+        Drop from dataframe any rows missing Distance values.
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe to drop from.
+        '''
         this_df = this_df.dropna(subset=['Distance'], inplace=True)
 
 
     def categorise_price(self, this_df):
+        '''
+        Categorise houses into High/Low for imputing.
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe to add new category features to.
+        '''
         log_price_mean = this_df['Price_LG'].mean()
         log_price_std = this_df['Price_LG'].std()
 
@@ -126,7 +249,12 @@ class CleanData:
 
 
     def impute_with_median_using_price_category(self, this_df):
+        '''
+        Impute missing values using median based on high/low price.
 
+            Parameters:
+            this_df (dataframe): Pandas dataframe to impute.
+        '''
         this_df = this_df.reset_index()
 
         # get list of all columns with NaN
@@ -160,7 +288,13 @@ class CleanData:
 
 
     def impute_missing_data(self, this_df):
-        #   https://campus.datacamp.com/courses/supervised-learning-with-scikit-learn/preprocessing-and-pipelines?ex=5
+        '''
+        Impute missing values using SimpleImputer.
+        https://campus.datacamp.com/courses/supervised-learning-with-scikit-learn/preprocessing-and-pipelines?ex=5
+
+            Parameters:
+            this_df (dataframe): Pandas dataframe to impute.
+        '''
 
         this_df = this_df.reset_index()
 
@@ -186,4 +320,14 @@ class CleanData:
 
 
     def return_df(self):
+        '''
+        Returns this instance of the dataframe.
+
+            Parameters:
+            -------
+            None
+
+            Returns:
+                this_df (Dataframe): A dataframe
+        '''
         return self.this_df
