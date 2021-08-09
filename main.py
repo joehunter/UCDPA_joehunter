@@ -4,6 +4,7 @@ import discovery
 import preprocessing
 import modelling
 import tuning
+import insights
 
 choose_data = int(input("Press 1 to choose local data already downloaded OR press 2 to download latest data from Kaggle(requires an API Token)?"))
 
@@ -18,11 +19,11 @@ df = fh.return_df()
 
 
 
-# discovery.EDA(df)
-#
-# data_cleaning = cleaning.CleanData(df)
-# df = data_cleaning.return_df()
-#
+discovery.EDA(df)
+
+data_cleaning = cleaning.CleanData(df)
+df = data_cleaning.return_df()
+
 # pre_processing = preprocessing.Encode(df)
 # df = pre_processing.return_df()
 #
@@ -30,3 +31,4 @@ df = fh.return_df()
 #
 # tuning.TuneModel(df)
 
+insights.Visualize(df)

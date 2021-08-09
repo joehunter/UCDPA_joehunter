@@ -110,6 +110,7 @@ class EDA:
 
         # Apply the power transform to the data
         this_df['Price_LG'] = pow_trans.transform(this_df[['Price_no_NA']])
+        this_df['Price_LG'] = pow_trans.transform(this_df[['Price_no_NA']])
 
         log_price_mean = this_df['Price_LG'].mean()
         log_price_std = this_df['Price_LG'].std()
