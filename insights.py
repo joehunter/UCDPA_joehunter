@@ -4,18 +4,49 @@ class Visualize:
 
     def __init__(self, this_df):
 
+        self.map_prices(this_df)
 
-        map_prices()
 
-
-    def map_prices(self):
+    def map_prices(self, this_df):
         # import libraries
         import geopandas as gpd
         from shapely.geometry import Point, Polygon
         import matplotlib.pyplot as plt
 
+        df = this_df[this_df['Longtitude'].notna()]
+        df = this_df[this_df['Lattitude'].notna()]
+
         # import street map
         street_map = gpd.read_file("./Maps/Metropolitan region_region.shp")
+
+        # designate coordinate system
+        crs = {'init':'espc: 4326'}
+        #zip x and y coordinates into single feature
+        geometry = [Point(xy) for xy in zip(df['Longtitude'], df['Lattitude'])]
+        # create GeoPandas dataframe
+        geo_df = gpd.GeoDataFrame(df, crs="EPSG:4326", geometry=geometry)
+        print(geo_df.head())
+
+        # create figure and axes, assign to subplot
+        fig, ax = plt.subplots(figsize=(15, 15))
+        # add .shp mapfile to axes
+        street_map.plot(ax=ax, alpha=0.4, color='grey')
+
+        # add geodataframe to axes
+        # assign ‘price’ variable to represent coordinates on graph
+        # add legend
+        # make datapoints transparent using alpha
+        # assign size of points using markersize
+        geo_df.plot(column='Price', ax = ax, alpha = 0.5, legend = True, markersize = 10)
+        # add title to graph
+        plt.title('Prices in Melbourne', fontsize = 15, fontweight ='bold')
+
+        # set latitiude and longitude boundaries for map display
+        #plt.xlim(-74.02, -73.925)
+        #plt.ylim(40.7, 40.8)
+        # show map
+        plt.show()
+
 
 
     def scatter_plot_distance_from_cbd(self, this_df):
