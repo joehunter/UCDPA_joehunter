@@ -15,16 +15,15 @@ class Visualize:
 
         df = this_df[this_df['Longtitude'].notna()]
         df = this_df[this_df['Lattitude'].notna()]
+        df = this_df[this_df['Price'].notna()]
 
         # import street map
         street_map = gpd.read_file("./Maps/Metropolitan region_region.shp")
 
-        # designate coordinate system
-        crs = {'init':'espc: 4326'}
         #zip x and y coordinates into single feature
         geometry = [Point(xy) for xy in zip(df['Longtitude'], df['Lattitude'])]
         # create GeoPandas dataframe
-        geo_df = gpd.GeoDataFrame(df, crs="EPSG:4326", geometry=geometry)
+        geo_df = gpd.GeoDataFrame(df, crs="EPSG:3112", geometry=geometry)
         print(geo_df.head())
 
         # create figure and axes, assign to subplot
@@ -37,13 +36,13 @@ class Visualize:
         # add legend
         # make datapoints transparent using alpha
         # assign size of points using markersize
-        geo_df.plot(column='Price', ax = ax, alpha = 0.5, legend = True, markersize = 10)
+        geo_df.plot(column='Price_LG', ax = ax, alpha = 0.5, legend = True, markersize = 1, legend_kwds={'label': "Prices", 'orientation': "horizontal"})
         # add title to graph
-        plt.title('Prices in Melbourne', fontsize = 15, fontweight ='bold')
+        plt.title('Melbourne Property Prices', fontsize = 15, fontweight ='bold')
 
         # set latitiude and longitude boundaries for map display
-        #plt.xlim(-74.02, -73.925)
-        #plt.ylim(40.7, 40.8)
+        plt.xlim(144.5, 145.50)
+        plt.ylim(-38.2, -37.6)
         # show map
         plt.show()
 
